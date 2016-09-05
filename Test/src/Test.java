@@ -14,7 +14,6 @@ import javax.swing.JPanel;
  */
 public class Test extends JFrame{
 	public static void main(String[] args) {
-		double a = Math.sin(1*Math.PI/2);
-		System.out.println(a);
+		System.out.println("Hello");
 	}
 }
