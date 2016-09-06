@@ -28,8 +28,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <body>
     	<%
     		StudentInfoDaoImpl stuInfoDao = new StudentInfoDaoImpl();
-    		int totalpages = stuInfoDao.getTotalPage();	//获取全部页数
-    		int allpages = stuInfoDao.getAllpages(); //获取总数据数
+    		int totalpages = stuInfoDao.getTotalPage(10);	//获取全部页数
+    		int allpages = stuInfoDao.getAllpages().size(); //获取总数据数
     		String currentpage = request.getParameter("pageindex");	//获取当前页
     		//防止上一页、下一页越过边界
     		if (currentpage == null) {
@@ -41,7 +41,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			} else if (pageindex > totalpages) {
 				pageindex = totalpages;
 			}
-			List list = stuInfoDao.getDatabypage(pageindex);
+			List list = stuInfoDao.getAllpages();
 	    		
     	 %>
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -121,18 +121,18 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                                     </tr>
                                                     <%
                                                     	Student stu = new Student();
-                                                    	for(int i=0;i<list.size();i++){
+                                                    	for(int i=(pageindex-1)*10;i<pageindex*10;i++){
                                                     		stu = (Student)list.get(i);
                                                      %>
                                                     <tr align="center" class="d">
-                                                        <td><%=stu.getName() %></td>
-                                                        <td>公司首页</td>
-                                                        <td>链接</td>
-                                                        <td>显示</td>
-                                                        <td>链接</td>
-                                                        <td>显示</td>
-                                                        <td>顶部底部</td>
-                                                        <td>编辑 删除 内容管理</td>
+                                                        <td><%=stu.getStu_name() %></td>
+                                                        <td><%=stu.getStu_iden() %></td>
+                                                        <td><%=stu.getStu_course() %></td>
+                                                        <td><%=stu.getStu_classroom() %></td>
+                                                        <td><%=stu.getStu_lecturer() %></td>
+                                                        <td><%=stu.getStu_phone() %></td>
+                                                        <td><%=stu.getStu_address() %></td>
+                                                        <td><a href="">编辑</a> <a href="">删除</a> </td>
                                                     </tr>
                                                     <%
                                                     	}

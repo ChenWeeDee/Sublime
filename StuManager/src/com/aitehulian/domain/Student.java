@@ -9,31 +9,37 @@ import java.sql.Date;
  */
 public class Student {
 	
-	String stu_id;
-	String stu_iden;
-	String stu_sex;
-	int stu_age;
-	Date stu_birth;
-	String stu_phone;
-	String stu_email;
+	String stu_name;	//学生姓名
+	String stu_iden;	//身份证号
+	String stu_sex;		//性别
+	int stu_age;		//年龄
+	Date stu_birth;		//出生年月
+	String stu_phone;	//联系方式（手机）
+	String stu_email;	//邮箱
 	String stu_poli;     //政治面貌
-	String stu_subject;
-	String stu_school;
+	String stu_subject;	 //专业
+	String stu_school;	 //所属院校
 	String stu_census;		//户籍
 	String stu_census_detail;  //户籍详细地址
-	String stu_address;
+	String stu_address;		//住址
 	String stu_post;  // 邮编
-	String stu_course;
+	String stu_course;	//培训课程
 	String stu_lecturer;//讲师
 	String stu_classroom;//班级
 	String stu_img;
+	/**
+	 * @return the stu_name
+	 */
+	public String getStu_name() {
+		return stu_name;
+	}
+	/**
+	 * @param stuName the stu_name to set
+	 */
+	public void setStu_name(String stuName) {
+		stu_name = stuName;
+	}
 	
-	public String getStu_id() {
-		return stu_id;
-	}
-	public void setStu_id(String stuId) {
-		stu_id = stuId;
-	}
 	public String getStu_iden() {
 		return stu_iden;
 	}

@@ -33,10 +33,10 @@ public class SelectStuInfoServlet extends HttpServlet {
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String stuName = request.getParameter("stuName");
-		String className = request.getParameter("className");
-		String stuIdCard = request.getParameter("stuIdCard");
-		String stuAdress = request.getParameter("stuAdress");
+		String stuName = request.getParameter("stu_name");
+		String className = request.getParameter("stu_classroom");
+		String stuIdCard = request.getParameter("stu_iden");
+		String stuAdress = request.getParameter("stu_address");
 		String selectSql = "select * from student where 1=1";
 		//如果获取的值为空就舍弃该字段搜索，如果不为空就加入该字段搜索，各字段关系为“与”；
 		if(className!=null&&className!=""){

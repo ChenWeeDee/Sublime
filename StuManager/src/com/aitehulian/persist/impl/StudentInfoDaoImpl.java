@@ -75,55 +75,78 @@ public class StudentInfoDaoImpl implements StudentDao {
 		return stuInfos;
 	}
 	//实现分页显示
-	public List getDatabypage(int pageindex) throws SQLException{
+	public List getDatabypage(int pagesize,int pageindex) throws SQLException{
 		List list = new ArrayList();
 		String sql = "select *from student where id between ? and ?";
 		conn = JdbcUtil.getConnection();
 		PreparedStatement pstm = conn.prepareStatement(sql);
-		pstm.setInt(1, 10*(pageindex-1)+1);
-		pstm.setInt(2, 10*pageindex);
+		pstm.setInt(1, pagesize*(pageindex-1)+1);
+		pstm.setInt(2, pagesize*pageindex);
 		ResultSet res = pstm.executeQuery();
 		int i=0;
 		while(res.next()){
 			Student stu = new Student();
-			int Id = (int)res.getInt("stu_id");
-			int stu_no = (int)res.getInt("stu_no");
-			String name = (String)res.getString("name");
-			String sex = (String)res.getString("sex");
-			String email = (String)res.getString("email");
-			String telPhone = (String)res.getString("phone");
-			stu.setId(Id);
-			stu.setStu_no(stu_no);
-			stu.setName(name);
-			stu.setSex(sex);
-			stu.setEmail(email);
-			stu.setTelPhone(telPhone);
+			String stu_name = res.getString("stu_name");	//获取学生姓名
+			String stu_iden = res.getString("stu_iden"); //获取身份证号
+			String stu_course = res.getString("stu_course");		//..培训课程
+			String stu_classroom = res.getString("stu_classroom");		//..所在班级
+			String stu_lecturer = res.getString("stu_lecturer");		//..培训讲师
+			String stu_phone = res.getString("stu_phone");		//..手机号
+			String stu_address = res.getString("stu_address");		//..住址
+			
+			stu.setStu_name(stu_name);
+			stu.setStu_iden(stu_iden);
+			stu.setStu_course(stu_course);
+			stu.setStu_classroom(stu_classroom);
+			stu.setStu_lecturer(stu_lecturer);
+			stu.setStu_phone(stu_phone);
+			stu.setStu_address(stu_address);
 			list.add(i,stu);
 			i++;
 		}
 		return list;
 	}
 	/*获取留言总数*/
-	public int getAllpages(){
+	public List getAllpages(){
 		int counts = 0;
+		List list = new ArrayList();
 		try {
 			conn=JdbcUtil.getConnection();
 			System.out.println(conn);
 			PreparedStatement pstm = conn.prepareStatement("select *from student");
 			ResultSet res = pstm.executeQuery();
+			int i=0;
 			while(res.next()){
 				counts = res.getInt(1);
+				Student stu = new Student();
+				String stu_name = res.getString("stu_name");	//获取学生姓名
+				String stu_iden = res.getString("stu_iden"); //获取身份证号
+				String stu_course = res.getString("stu_course");		//..培训课程
+				String stu_classroom = res.getString("stu_classroom");		//..所在班级
+				String stu_lecturer = res.getString("stu_lecturer");		//..培训讲师
+				String stu_phone = res.getString("stu_phone");		//..手机号
+				String stu_address = res.getString("stu_address");		//..住址
+				
+				stu.setStu_name(stu_name);
+				stu.setStu_iden(stu_iden);
+				stu.setStu_course(stu_course);
+				stu.setStu_classroom(stu_classroom);
+				stu.setStu_lecturer(stu_lecturer);
+				stu.setStu_phone(stu_phone);
+				stu.setStu_address(stu_address);
+				list.add(i,stu);
+				i++;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return counts;
+		return list;
 	}
 	/*获取总页数*/
-	public int getTotalPage(){  
-        int totalPage=getAllpages();  
-        return (totalPage%10==0)?(totalPage/10):(totalPage/10+1);  
+	public int getTotalPage(int pagesize){  
+        int totalPage=getAllpages().size();  
+        return (totalPage%pagesize==0)?(totalPage/pagesize):(totalPage/pagesize+1);  
     }  
 
 	public boolean update(String sql) {
