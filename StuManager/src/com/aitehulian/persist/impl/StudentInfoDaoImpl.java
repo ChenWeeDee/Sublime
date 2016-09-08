@@ -61,8 +61,21 @@ public class StudentInfoDaoImpl implements StudentDao {
 			int i=0;
 			while(res.next()){
 				Student stu = new Student();
-				stu = (Student)res.getObject(i);
-				i++;
+				String stu_name = res.getString("stu_name");	//获取学生姓名
+				String stu_iden = res.getString("stu_iden"); //获取身份证号
+				String stu_course = res.getString("stu_course");		//..培训课程
+				String stu_classroom = res.getString("stu_classroom");		//..所在班级
+				String stu_lecturer = res.getString("stu_lecturer");		//..培训讲师
+				String stu_phone = res.getString("stu_phone");		//..手机号
+				String stu_address = res.getString("stu_address");		//..住址
+				
+				stu.setStu_name(stu_name);
+				stu.setStu_iden(stu_iden);
+				stu.setStu_course(stu_course);
+				stu.setStu_classroom(stu_classroom);
+				stu.setStu_lecturer(stu_lecturer);
+				stu.setStu_phone(stu_phone);
+				stu.setStu_address(stu_address);				i++;
 				stuInfos.add(stu);
 			}
 		
@@ -78,6 +91,7 @@ public class StudentInfoDaoImpl implements StudentDao {
 	public List getDatabypage(int pagesize,int pageindex) throws SQLException{
 		List list = new ArrayList();
 		String sql = "select *from student where id between ? and ?";
+		try{
 		conn = JdbcUtil.getConnection();
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setInt(1, pagesize*(pageindex-1)+1);
@@ -104,9 +118,17 @@ public class StudentInfoDaoImpl implements StudentDao {
 			list.add(i,stu);
 			i++;
 		}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			JdbcUtil.closeConnection(conn);
+		}
 		return list;
 	}
 	/*获取留言总数*/
+	/**
+	 * 获取全部学生信息
+	 */
 	public List getAllpages(){
 		int counts = 0;
 		List list = new ArrayList();
@@ -117,7 +139,6 @@ public class StudentInfoDaoImpl implements StudentDao {
 			ResultSet res = pstm.executeQuery();
 			int i=0;
 			while(res.next()){
-				counts = res.getInt(1);
 				Student stu = new Student();
 				String stu_name = res.getString("stu_name");	//获取学生姓名
 				String stu_iden = res.getString("stu_iden"); //获取身份证号
@@ -140,15 +161,36 @@ public class StudentInfoDaoImpl implements StudentDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally{
+			JdbcUtil.closeConnection(conn);
 		}
 		return list;
 	}
-	/*获取总页数*/
+	/**
+	 * 获取总页数
+	 * */
 	public int getTotalPage(int pagesize){  
         int totalPage=getAllpages().size();  
         return (totalPage%pagesize==0)?(totalPage/pagesize):(totalPage/pagesize+1);  
     }  
 
+	/**
+	 * 学生信息删除操作
+	 */
+	public boolean deleteStuInfo(String stu_iden){
+		String deleteSql = "delete from student where stu_iden=?";
+		conn = JdbcUtil.getConnection();
+		try {
+			PreparedStatement pstm = conn.prepareStatement(deleteSql);
+			pstm.setString(1, stu_iden);
+			pstm.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			JdbcUtil.closeConnection(conn);
+		}
+		return false;
+	}
 	public boolean update(String sql) {
 		
 		return false;

@@ -24,11 +24,31 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="./Style/skin.css" />
+    <style type="text/css">
+    	a:hover{color:red;}
+    	a:active{color:pink;}
+    </style>
 </head>
+<script type="text/javascript">
+	function changeSize(index){
+		var arr=new Array(10,20,30);
+		alert(index);
+		var url="/StuManager/html/stuManager/cat_manage.jsp?pagesize="+arr[index];
+		alert(url);
+		docuemnt.getElementById("pagesize").options[index].selected=true;
+		window.location.href=url;
+	}
+</script>
     <body>
     	<%
+    		String pagetmp = request.getParameter("pagesize");
+    		if(pagetmp == null){
+    			pagetmp = "10";
+    		}
+    		int pagesize = Integer.parseInt(pagetmp);
     		StudentInfoDaoImpl stuInfoDao = new StudentInfoDaoImpl();
-    		int totalpages = stuInfoDao.getTotalPage(10);	//获取全部页数
+    		int totalpages = stuInfoDao.getTotalPage(pagesize);	//获取全部页数
+    		System.out.println(totalpages);
     		int allpages = stuInfoDao.getAllpages().size(); //获取总数据数
     		String currentpage = request.getParameter("pageindex");	//获取当前页
     		//防止上一页、下一页越过边界
@@ -41,8 +61,20 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			} else if (pageindex > totalpages) {
 				pageindex = totalpages;
 			}
-			List list = stuInfoDao.getAllpages();
-	    		
+			List listAll = stuInfoDao.getAllpages();
+			List listSelect = (ArrayList)request.getSession().getAttribute("listSelect");
+			System.out.println("我是查询表"+listSelect);
+			
+			List list = new ArrayList();
+			if(listSelect!=null){
+				list = listSelect;
+				request.getSession().setAttribute("listSelect",null);
+			}else{
+				listSelect = null;
+				list = listAll;
+			}
+				//totalpages = list.size();
+	    		System.out.println("我是遍历表"+list);
     	 %>
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
             <!-- 头部开始 -->
@@ -80,7 +112,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         <tr>
                             <td height="40" colspan="4">
                                 <table width="100%" height="1" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
-                                    <tr><td></td></tr>
+                                    <tr><td><br></td></tr>
                                 </table>
                             </td>
                         </tr>
@@ -91,22 +123,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                 <table width="100%">
                                     <tr>
                                         <td colspan="2">
+                                        	<form method="post" action="<%=request.getContextPath() %>/SelectStuInfoServlet">
                                         	<table width="100%"  class="cont tr_color">
                                         		<tr align="center">
 													<td>班级：</td>
-													<td><input id="stu_class" name="stu_class"  type="text" style="width: 120px; height: 20px;" />&nbsp;&nbsp;&nbsp;</td>
+													<td><input id="stu_class" name="stu_classroom"  type="text" style="width: 120px; height: 20px;" />&nbsp;&nbsp;&nbsp;</td>
 													<td>&nbsp;姓名：</td>
 													<td><input id="stu_name" name="stu_name"  type="text" style="width: 120px; height: 20px;" />&nbsp;&nbsp;&nbsp;</td>
 													<td>&nbsp;身份证号：</td>
-													<td><input id="stu_id" name="stu_id"  type="text" style="width: 120px; height: 20px;" />&nbsp;&nbsp;&nbsp;</td>
+													<td><input id="stu_id" name="stu_iden"  type="text" style="width: 120px; height: 20px;" />&nbsp;&nbsp;&nbsp;</td>
 													<td>&nbsp;户籍地址：</td>
-													<td><input id="stu_huji" name="stu_huji"  type="text" style="width: 120px; height: 20px;" /></td>
+													<td><input id="stu_huji" name="stu_address"  type="text" style="width: 120px; height: 20px;" /></td>
 													<td colspan="3" align="left"><input type="submit" value="查询"/></td>
 												</tr>
 												<tr>
 													<td colspan="8" align="center"><h3>查询结果</h3></td>
 												</tr>
                                         	</table>
+                                        	</form>
                                             <form action="" method="">	
                                                 <table width="100%"  class="cont tr_color">
                                                     <tr>
@@ -121,38 +155,39 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                                     </tr>
                                                     <%
                                                     	Student stu = new Student();
-                                                    	for(int i=(pageindex-1)*10;i<pageindex*10;i++){
+                                                    	for(int i=(pageindex-1)*pagesize;i<(pageindex*pagesize>list.size()?list.size():pageindex*pagesize);i++){
                                                     		stu = (Student)list.get(i);
                                                      %>
                                                     <tr align="center" class="d">
-                                                        <td><%=stu.getStu_name() %></td>
-                                                        <td><%=stu.getStu_iden() %></td>
-                                                        <td><%=stu.getStu_course() %></td>
-                                                        <td><%=stu.getStu_classroom() %></td>
-                                                        <td><%=stu.getStu_lecturer() %></td>
-                                                        <td><%=stu.getStu_phone() %></td>
-                                                        <td><%=stu.getStu_address() %></td>
-                                                        <td><a href="">编辑</a> <a href="">删除</a> </td>
+                                                        <td><%=stu.getStu_name() %><br></td>
+                                                        <td><%=stu.getStu_iden() %><br></td>
+                                                        <td><%=stu.getStu_course() %><br></td>
+                                                        <td><%=stu.getStu_classroom() %><br></td>
+                                                        <td><%=stu.getStu_lecturer() %><br></td>
+                                                        <td><%=stu.getStu_phone() %><br></td>
+                                                        <td><%=stu.getStu_address() %><br></td>
+                                                        <td><a href="">编辑</a> <a href="<%=request.getContextPath() %>/html/stuManager/deleteStuInfo.jsp?stu_iden=<%=stu.getStu_iden() %>">删除</a> </td>
                                                     </tr>
                                                     <%
                                                     	}
+                                                    	
                                                      %>
                                                     <tr align="center" class="d">
-                                                        <td></td>
+                                                        <td><br></td>
                                                         <td colspan="7">
                                                         	每页显示
-                                                        	<select>
+                                                        	<select id="pagesize" onchange="changeSize(this.selectedIndex)">
                                                         		<option>10</option>
                                                         		<option>20</option>
-                                                        		<option>50</option>
+                                                        		<option>30</option>
                                                         	</select>
                                                         	条数据,
                                                         	当前页<span>&nbsp<%=pageindex%>&nbsp</span>/共<span><%=totalpages %></span>页----
-                                                        	<a href="cat_manage.jsp?pageindex=1" style="text-decoration: underline;color: blue;"> 首页</a>----
-                                                        	<a href="cat_manage.jsp?pageindex=<%=pageindex - 1%>" style="text-decoration: underline;color: blue;">上一页</a>---
-                                                        	<a href="cat_manage.jsp?pageindex=<%=pageindex + 1%>" style="text-decoration: underline;color: blue;">下一页</a>---
-                                                        	<a href="cat_manage.jsp?pageindex=<%=totalpages%>" style="text-decoration: underline;color: blue;">末页</a>---
-                                                        	共<%=allpages %>条数据
+                                                        	<a href="<%=request.getContextPath() %>/html/stuManager/cat_manage.jsp?pageindex=1" style="text-decoration: underline;color: blue;"> 首页</a>----
+                                                        	<a href="<%=request.getContextPath() %>/html/stuManager/cat_manage.jsp?pageindex=<%=pageindex - 1%>" style="text-decoration: underline;color: blue;">上一页</a>---
+                                                        	<a href="<%=request.getContextPath() %>/html/stuManager/cat_manage.jsp?pageindex=<%=pageindex + 1%>" style="text-decoration: underline;color: blue;">下一页</a>---
+                                                        	<a href="<%=request.getContextPath() %>/html/stuManager/cat_manage.jsp?pageindex=<%=totalpages%>" style="text-decoration: underline;color: blue;">末页</a>---
+                                                        	共<%=list.size() %>条数据
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -167,7 +202,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         <tr>
                             <td height="40" colspan="4">
                                 <table width="100%" height="1" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
-                                    <tr><td></td></tr>
+                                    <tr><td><br></td></tr>
                                 </table>
                             </td>
                         </tr>
